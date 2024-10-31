@@ -1,0 +1,12 @@
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(250),
+    nome varchar(100),
+    senha VARCHAR(250),
+    estado VARCHAR(10),
+    status INT,
+    data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_user_deleted INT,
+    data_deletado TIMESTAMP NULL
+);
+
