@@ -95,8 +95,10 @@ class User{
 
                 if ($row) { 
                     if(password_verify($array_user_infos['senha'], $row['senha'])){
-                        $retorno = [
-                            'msg'       => 'logou',
+                        $jwt    = new ApiJWT();
+                        $encode = $jwt->encode($row);
+                        $retorno= [
+                            'msg'       => $encode,
                             'status'    => $status_code
                         ];
                     } else {
@@ -112,7 +114,7 @@ class User{
             if($msg) throw new Exception($msg);
             
         } catch (Exception $e) {
-            $status_code = 400;
+            $status_code = 401;
             
             $retorno = [
                 'msg'       => $e->getMessage(),
@@ -124,7 +126,7 @@ class User{
     }
 
     public function auth($array_user_infos){
-        
+
     }
 
 }

@@ -1,13 +1,16 @@
 <?php 
 
 include_once __DIR__ . "/../../model/user/user.php";
-include_once __DIR__ . "/../../API/apiJWT.php";
+require "../../../vendor/autoload.php";
 
 
 header('Content-Type: application/json; charset=utf-8');
 
+
 $status_code        = 200;
 $array_user_infos   = [];
+
+
 
 function validarCampo($campo, $mensagem) {
     if (!isset($_POST[$campo]) || empty($_POST[$campo])) {
@@ -22,31 +25,33 @@ try {
 
     $userModel  = new User();
 
-    $email  = $_POST['email'];
-    $senha  = $_POST['senha'];
+    $email  = filter_input(INPUT_POST,'email', FILTER_SANITIZE_EMAIL);
+    $senha  = filter_input(INPUT_POST,'senha', FILTER_SANITIZE_STRING);
 
     $array_user_infos = [
         'email' => $email,
         'senha' => $senha,
     ];
 
-    $cadastro   = $userModel->login($array_user_infos);
+    $login   = $userModel->login($array_user_infos);
 
-    if($cadastro['status'] == 400){
-        throw new Exception($cadastro['msg']);
-    }else if( $cadastro['status'] == 200){
+    if($login['status'] == 401){
+        http_response_code(401);
+    }else if( $login['status'] == 200){
         $retorno = [
-            'msg' => $cadastro['msg'],
+            'msg' => $login['msg'],
             'status' => $status_code
         ];
     }
 
 } catch (Exception $e) {
-    $status_code = 400;
-    $retorno = [
-        'msg' => $e->getMessage(),
-        'status' => $status_code
-    ];
+
+    // Somente para debug
+    // $retorno = [
+    //     'msg' => $e->getMessage(),
+    //     'status' => 400
+    // ];
+    http_response_code(401);
 }
 
 echo json_encode($retorno);

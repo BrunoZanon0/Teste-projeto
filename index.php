@@ -20,7 +20,7 @@
         <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
             <form>
                 <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
-                    <p class="lead fw-normal mb-0 me-3">Login</p>
+                    <h1>Login</h1>
                 </div>
 
                 <div class="divider d-flex align-items-center my-4">
@@ -55,7 +55,7 @@
     
     let btn_logar   = $('.btn_entrar');
 
-    btn_logar.on('click',function(){
+    btn_logar.on('click', async function(){
         
         let valida = true;
 
@@ -73,29 +73,25 @@
         let email = $('#email').val();
         let senha = $('#senha').val();
 
-        $.ajax({
-            url:"assets/controller/user/login.php",
-            method:'POST',
-            data:{
-                'email' : email,
-                'senha' : senha
-            },
-                success:function(response){
-                    if(response.status == 200){
-                        // Swal.fire('Sucesso',response.msg,'success').then(()=>{
-                        //     $('#senha').val('');
-                        //     $('#email').val('');
-                        // });
-                        Swal.fire('Sucesso',response.msg,'success');
-                        
-                    }else if(response.status == 400){
-                        Swal.fire('erro',response.msg,'error');
-                    }
-                },
-                error:function(erro){
-                    console.log(erro);
-                }
-        })
+        try {
+            const formData = new FormData();
+
+            formData.append('email',email)
+            formData.append('senha',senha)
+
+            const {data} = await axios.post("assets/controller/user/login.php",formData);
+
+            sessionStorage.setItem('session', data.msg);
+
+            window.location.href = '/projects/Teste-projeto/assets/pages/dashboard_auth.php';
+            
+        } catch (error) {
+            if(error.status == 401){
+                Swal.fire('Erro','Usuario ou senha inválida, caso o erro persista, favor entrar em contato com suporte','error');
+                return;
+            }
+        }
+
     })
 </script>
 </html>
